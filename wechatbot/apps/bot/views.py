@@ -40,18 +40,18 @@ def start(request):
     try: 
         global wx_obj
         qrcode=request.GET.get('qrcode')
-        wx = WeChatPYApi(msg_callback=on_message, exit_callback=on_exit, logger=logging)
+        if not wx_obj:
+            wx_obj = WeChatPYApi(msg_callback=on_message, exit_callback=on_exit, logger=logging)
         imagepath=os.path.join(BASE_DIR, "public/images","login_qrcode.png")
         if qrcode and qrcode!='0':
             print(imagepath)
             if os.path.exists(imagepath):
                 os.remove(imagepath)
-            wx.start_wx(path=imagepath)  # 保存登录二维码
+            wx_obj.start_wx(path=imagepath)  # 保存登录二维码
             time.sleep(2)
         else:
-            wx.start_wx()
+            wx_obj.start_wx()
         print('启动成功！')
-        wx_obj=wx
         t=AwaitLoginThread(wx_obj=wx_obj)
         t.start()
         if qrcode and qrcode!='0':
